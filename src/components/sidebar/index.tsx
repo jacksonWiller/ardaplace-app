@@ -94,7 +94,7 @@ export function Sidebar() {
             </nav>
         </aside>
 
-        <div className="sm:hidden flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        <div className="sm:hidden flex w-full flex-col sm:gap-4 sm:py-4 sm:pl-14">
             <header className='sticky top-0 z-30 flex h-14 items-center px-4 border-b 
             bg-background gap-4 
                 sm:static sm:h-auto sm:border-0 ms:bg-transparent sm:px-6' 
@@ -106,7 +106,7 @@ export function Sidebar() {
                                 <span className='sr-only'> Open/Close </span> 
                         </Button>
                     </SheetTrigger>
-
+                    Menu
                     <SheetContent side="left" className="sm:max-w-x">
                         <nav className="grid gap-6 text-lg font-medium">
 
