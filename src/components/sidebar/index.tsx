@@ -34,7 +34,7 @@ export function Sidebar() {
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link href="#" className="flex h-9 w-9 items-center justify-center rounded-lg
+                            <Link href="/orders" className="flex h-9 w-9 items-center justify-center rounded-lg
                             text-muted-foreground transition-colors hover:text-foreground">
                                 <ShoppingBag className="h-4 w-4"/>
                                 <span className="sr-only">Orders</span>
@@ -45,7 +45,7 @@ export function Sidebar() {
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link href="#" className="flex h-9 w-9 items-center justify-center rounded-lg
+                            <Link href="/products" className="flex h-9 w-9 items-center justify-center rounded-lg
                             text-muted-foreground transition-colors hover:text-foreground">
                                 <Package className="h-4 w-4"/>
                                 <span className="sr-only">Products</span>
@@ -56,7 +56,7 @@ export function Sidebar() {
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link href="#" className="flex h-9 w-9 items-center justify-center rounded-lg
+                            <Link href="/costumers" className="flex h-9 w-9 items-center justify-center rounded-lg
                             text-muted-foreground transition-colors hover:text-foreground">
                                 <Users className="h-4 w-4"/>
                                 <span className="sr-only">Costumers</span>
@@ -67,7 +67,7 @@ export function Sidebar() {
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link href="#" className="flex h-9 w-9 items-center justify-center rounded-lg
+                            <Link href="/configurations" className="flex h-9 w-9 items-center justify-center rounded-lg
                             text-muted-foreground transition-colors hover:text-foreground">
                                 <Settings className="h-4 w-4"/>
                                 <span className="sr-only">Configurations</span>
