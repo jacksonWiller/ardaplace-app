@@ -1,46 +1,32 @@
-'use client';
+"use client";
 
 import {
   TableHead,
   TableRow,
   TableHeader,
   TableBody,
-  Table
-} from '@/components/ui/table';
+  Table,
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { Product } from './product';
-import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { PagedInfo } from '@/models/PagedInfo';
-import { ProductType } from '@/models/ProductType';
-
-
+  CardTitle,
+} from "@/components/ui/card";
+import { Product } from "./product";
+import { PagedInfoModel } from "@/models/PagedInfoModel";
+import { ProductModel } from "@/models/ProductModel";
+import { PaginationComponent } from "@/components/pagination";
 
 export function ProductsTable({
   products,
-  pagedInfo
+  pagedInfo,
 }: {
-  products: ProductType[];
-  pagedInfo: PagedInfo;
+  products: ProductModel[];
+  pagedInfo: PagedInfoModel;
 }) {
-  const router = useRouter();
-
-  function prevPage() {
-    router.push(`/?pageNumber=${pagedInfo.pageNumber - 1}&pageSize=${pagedInfo.pageSize}`, { scroll: false });
-  }
-
-  function nextPage() {
-    router.push(`/?pageNumber=${pagedInfo.pageNumber + 1}&pageSize=${pagedInfo.pageSize}`, { scroll: false });
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -59,9 +45,7 @@ export function ProductsTable({
               <TableHead>Name</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden md:table-cell">Price</TableHead>
-              <TableHead className="hidden md:table-cell">
-                Stock
-              </TableHead>
+              <TableHead className="hidden md:table-cell">Stock</TableHead>
               <TableHead className="hidden md:table-cell">Created at</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
@@ -75,38 +59,16 @@ export function ProductsTable({
           </TableBody>
         </Table>
       </CardContent>
-      <CardFooter>
-        <form className="flex items-center w-full justify-between">
-          <div className="text-xs text-muted-foreground">
-            Showing{' '}
-            <strong>
-              {((pagedInfo.pageNumber - 1) * pagedInfo.pageSize) + 1}-{Math.min(pagedInfo.pageNumber * pagedInfo.pageSize, pagedInfo.totalRecords)}
-            </strong>{' '}
-            of <strong>{pagedInfo.totalRecords}</strong> products
-          </div>
-          <div className="flex">
-            <Button
-              onClick={prevPage}
-              variant="ghost"
-              size="sm"
-              type="button"
-              disabled={pagedInfo.pageNumber === 1}
-            >
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Prev
-            </Button>
-            <Button
-              onClick={nextPage}
-              variant="ghost"
-              size="sm"
-              type="button"
-              disabled={pagedInfo.pageNumber === pagedInfo.totalPages}
-            >
-              Next
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </form>
+      <CardFooter className="flex flex-col items-center space-y-4">
+        <div className="text-sm text-muted-foreground">
+          Showing {(pagedInfo.pageNumber - 1) * pagedInfo.pageSize + 1} to{" "}
+          {Math.min(
+            pagedInfo.pageNumber * pagedInfo.pageSize,
+            pagedInfo.totalRecords
+          )}{" "}
+          of {pagedInfo.totalRecords} products
+        </div>
+        <PaginationComponent {...pagedInfo} />
       </CardFooter>
     </Card>
   );

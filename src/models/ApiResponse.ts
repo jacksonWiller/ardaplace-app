@@ -1,12 +1,12 @@
-import { PagedInfo } from "./PagedInfo";
+import { PagedInfoModel } from "./PagedInfoModel";
 
 export interface ApiResponse<T> {
-    result: {
-      pagedInfo?: PagedInfo;
-      [key: string]: T[] | PagedInfo | undefined;
-    };
-    success: boolean;
-    successMessage: string;
-    statusCode: number;
-    errors: string[];
-  }
+  result: {
+    pagedInfo?: PagedInfoModel;
+    [key: string]: T[] | PagedInfoModel | undefined;
+  };
+  success: boolean;
+  successMessage: string;
+  statusCode: number;
+  errors: string[];
+}
