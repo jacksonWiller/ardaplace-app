@@ -1,12 +1,16 @@
 import { ProductModel } from "@/models/ProductModel";
 import { PagedInfoModel } from "@/models/PagedInfoModel";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 import https from "https";
 
 const API_BASE_URL = "https://localhost:44331/api";
 
-axios.defaults.httpsAgent = new https.Agent({
-  rejectUnauthorized: false,
+// Create a custom Axios instance with default configurations
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false, // This is necessary for self-signed certificates in development
+  }),
 });
 
 export class ProductService {
@@ -17,12 +21,9 @@ export class ProductService {
     pageSize?: number
   ): Promise<{ products: ProductModel[]; pagedInfo?: PagedInfoModel }> {
     try {
-      const response: AxiosResponse = await axios.get(
-        `${API_BASE_URL}/Products`,
-        {
-          params: { filter, order, pageNumber, pageSize },
-        }
-      );
+      const response: AxiosResponse = await axiosInstance.get("/Products", {
+        params: { filter, order, pageNumber, pageSize },
+      });
 
       if (response.data.success) {
         return {
@@ -42,8 +43,8 @@ export class ProductService {
 
   async getProductById(id: string): Promise<ProductModel> {
     try {
-      const response: AxiosResponse = await axios.get(
-        `${API_BASE_URL}/Products/${id}`
+      const response: AxiosResponse = await axiosInstance.get(
+        `/Products/${id}`
       );
 
       if (response.data.success && response.data.result) {
@@ -60,31 +61,56 @@ export class ProductService {
   }
 
   async createProduct(
-    product: Omit<ProductModel, "id">
+    product: Omit<ProductModel, "id">,
+    files: File[]
   ): Promise<ProductModel> {
     try {
-      const response: AxiosResponse = await axios.post(
-        `${API_BASE_URL}/Products`,
-        product
+      const formData = new FormData();
+
+      formData.append("Name", product.name);
+      formData.append("Description", product.description);
+      formData.append("Category", product.category);
+      formData.append("Price", product.price.toString());
+      formData.append("StockQuantity", product.stockQuantity.toString());
+      formData.append("SKU", product.sku);
+      formData.append("Brand", product.brand);
+
+      //formData.append("product", JSON.stringify(product));
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      // Adicione cada campo do produto individualmente ao FormData
+
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      const response: AxiosResponse = await axiosInstance.post(
+        "/Products",
+        formData,
+        config
       );
 
       if (response.data.success && response.data.result) {
         return response.data.result;
       } else {
         throw new Error(
-          response.data.errors?.join(", ") || "Failed to create product"
+          response.data.errors?.join(", ") || "Falha ao criar produto"
         );
       }
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Erro ao criar produto:", error);
       throw error;
     }
   }
 
   async updateProduct(product: ProductModel): Promise<ProductModel> {
     try {
-      const response: AxiosResponse = await axios.put(
-        `${API_BASE_URL}/Products`,
+      const response: AxiosResponse = await axiosInstance.put(
+        "/Products",
         product
       );
 
@@ -103,8 +129,8 @@ export class ProductService {
 
   async deleteProduct(id: string): Promise<boolean> {
     try {
-      const response: AxiosResponse = await axios.delete(
-        `${API_BASE_URL}/Products/${id}`
+      const response: AxiosResponse = await axiosInstance.delete(
+        `/Products/${id}`
       );
 
       if (response.data.success) {

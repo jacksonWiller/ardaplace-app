@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,9 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { ProductModel } from "@/models/ProductModel";
 
 export function Product({ product }: { product: ProductModel }) {
+  const imageUrl = product.images[0]?.url
+    ? `http://s3.localhost.localstack.cloud:4566/jacksonlocal/${product.images[0].url}`
+    : "/product-not-found.png";
   return (
     <TableRow>
       <TableCell className="hidden sm:table-cell">
@@ -20,7 +25,7 @@ export function Product({ product }: { product: ProductModel }) {
           alt="Product image"
           className="aspect-square rounded-md object-cover"
           height="64"
-          src="/placeholder.svg" // Replace with actual image URL when available
+          src={imageUrl}
           width="64"
         />
       </TableCell>

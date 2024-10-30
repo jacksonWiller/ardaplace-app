@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,70 +14,73 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { productService } from '@/services/productServices'
-import { toast } from '@/hooks/use-toast'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { productService } from "@/services/productServices";
+import { toast } from "@/hooks/use-toast";
+import DragAndDrop from "@/components/upload";
 
 const productSchema = z.object({
   name: z.string().min(2, {
-    message: 'Product name must be at least 2 characters.',
+    message: "O nome do produto deve ter pelo menos 2 caracteres.",
   }),
   description: z.string().min(10, {
-    message: 'Description must be at least 10 characters.',
+    message: "A descrição deve ter pelo menos 10 caracteres.",
   }),
   category: z.string().min(2, {
-    message: 'Category must be at least 2 characters.',
+    message: "A categoria deve ter pelo menos 2 caracteres.",
   }),
   price: z.number().min(0, {
-    message: 'Price must be a positive number.',
+    message: "O preço deve ser um número positivo.",
   }),
   stockQuantity: z.number().int().min(0, {
-    message: 'Stock quantity must be a non-negative integer.',
+    message: "A quantidade em estoque deve ser um número inteiro não negativo.",
   }),
   sku: z.string().min(2, {
-    message: 'SKU must be at least 2 characters.',
+    message: "O SKU deve ter pelo menos 2 caracteres.",
   }),
   brand: z.string().min(2, {
-    message: 'Brand must be at least 2 characters.',
+    message: "A marca deve ter pelo menos 2 caracteres.",
   }),
-})
+});
 
 export function RegisterProductForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      category: '',
+      name: "",
+      description: "",
+      category: "",
       price: 0,
       stockQuantity: 0,
-      sku: '',
-      brand: '',
+      sku: "",
+      brand: "",
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await productService.createProduct(values)
+      await productService.createProduct(values, files);
       toast({
-        title: 'Product registered successfully',
-        description: 'The new product has been added to the database.',
-      })
-      router.push('/products')
+        title: "Produto registrado com sucesso",
+        description: "O novo produto foi adicionado ao banco de dados.",
+      });
+      router.push("/products");
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'There was a problem registering the product. Please try again.',
-        variant: 'destructive',
-      })
+        title: "Erro",
+        description:
+          "Houve um problema ao registrar o produto. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -86,15 +89,32 @@ export function RegisterProductForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
+          name="files"
+          render={() => (
+            <FormItem>
+              <FormLabel>Upload de Arquivos</FormLabel>
+              <FormControl>
+                <DragAndDrop onFilesChange={setFiles} />
+              </FormControl>
+              <FormDescription>
+                Arraste e solte arquivos ou clique para selecionar arquivos.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Name</FormLabel>
+              <FormLabel>Nome do Produto</FormLabel>
               <FormControl>
-                <Input placeholder="Enter product name" {...field} />
+                <Input placeholder="Digite o nome do produto" {...field} />
               </FormControl>
               <FormDescription>
-                The name of the product as it will appear to customers.
+                O nome do produto como aparecerá para os clientes.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -105,16 +125,16 @@ export function RegisterProductForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Descrição</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter product description"
+                  placeholder="Digite a descrição do produto"
                   className="resize-none"
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                A detailed description of the product.
+                Uma descrição detalhada do produto.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -125,12 +145,12 @@ export function RegisterProductForm() {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Categoria</FormLabel>
               <FormControl>
-                <Input placeholder="Enter product category" {...field} />
+                <Input placeholder="Digite a categoria do produto" {...field} />
               </FormControl>
               <FormDescription>
-                The category this product belongs to.
+                A categoria a que este produto pertence.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -141,18 +161,16 @@ export function RegisterProductForm() {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>Preço</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter product price"
+                  placeholder="Digite o preço do produto"
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>
-                The selling price of the product.
-              </FormDescription>
+              <FormDescription>O preço de venda do produto.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -162,18 +180,16 @@ export function RegisterProductForm() {
           name="stockQuantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Stock Quantity</FormLabel>
+              <FormLabel>Quantidade em Estoque</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter stock quantity"
+                  placeholder="Digite a quantidade em estoque"
                   {...field}
                   onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
                 />
               </FormControl>
-              <FormDescription>
-                The number of items in stock.
-              </FormDescription>
+              <FormDescription>O número de itens em estoque.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -185,10 +201,10 @@ export function RegisterProductForm() {
             <FormItem>
               <FormLabel>SKU</FormLabel>
               <FormControl>
-                <Input placeholder="Enter product SKU" {...field} />
+                <Input placeholder="Digite o SKU do produto" {...field} />
               </FormControl>
               <FormDescription>
-                The Stock Keeping Unit (SKU) for this product.
+                A Unidade de Manutenção de Estoque (SKU) para este produto.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -199,21 +215,19 @@ export function RegisterProductForm() {
           name="brand"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Brand</FormLabel>
+              <FormLabel>Marca</FormLabel>
               <FormControl>
-                <Input placeholder="Enter product brand" {...field} />
+                <Input placeholder="Digite a marca do produto" {...field} />
               </FormControl>
-              <FormDescription>
-                The brand of the product.
-              </FormDescription>
+              <FormDescription>A marca do produto.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Registering...' : 'Register Product'}
+          {isLoading ? "Registrando..." : "Registrar Produto"}
         </Button>
       </form>
     </Form>
-  )
+  );
 }
